@@ -6,9 +6,25 @@ dotenv.config();
 
 const app = express();
 
+const allowedOrigins = [
+    process.env.CLIENT_PORT || "http://localhost:5173",
+    "http://localhost:5173", 
+    "http://localhost:3000", 
+    "https://ai-interview-mern.vercel.app", 
+];
+
 app.use(
     cors({
-        origin: process.env.CLIENT_PORT || "http://localhost:5000",
+        origin: function (origin, callback) {
+           
+            if (!origin) return callback(null, true);
+            
+            if (allowedOrigins.includes(origin)) {
+                return callback(null, true);
+            } else {
+                return callback(new Error('Not allowed by CORS'));
+            }
+        },
         credentials: true,
     })
 );
@@ -36,7 +52,7 @@ app.get("/", (req, res) => {
 
 const ServerStart = async () => {
     try {
-        const port = process.env.PORT || 5000;
+        const port = process.env.PORT || 3003;
         await app.listen(port, () => {
             console.log(`Server is running on port ${port}`);
         });
